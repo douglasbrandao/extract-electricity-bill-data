@@ -23,5 +23,6 @@ def extracted_data(pdf):
 for pdf_file in pdf_files:
     pdf = pdfquery.PDFQuery(pdf_file)
     pdf.load()
-    pdf.tree.write('pdfXML.txt', pretty_print=True)
+    xml_file = f'{pdf_file.stem}.xml'
+    pdf.tree.write(xml_file, pretty_print=True)
     print(extracted_data(pdf))
