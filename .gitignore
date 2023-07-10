@@ -1,3 +1,4 @@
 *.Identifier
 /venv
 /contas/*
+*.txt
