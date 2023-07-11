@@ -3,7 +3,8 @@ from pathlib import Path
 import pdfquery
 import pandas as pd
 
-pdf_files = Path.cwd().glob('**/*.pdf')
+current_dir = Path.cwd()
+pdf_files = current_dir.glob('**/*.pdf')
 
 def sanitize_string(plaintext: str) -> str:
     sanitized_string = plaintext
@@ -26,7 +27,7 @@ def extracted_data(pdf):
     icms_price = pdf.pq('LTTextLineHorizontal:overlaps_bbox("246.96, 716.289, 257.76, 720.605")').text()
     unit_fee = pdf.pq('LTTextLineHorizontal:overlaps_bbox("266.52, 796.569, 284.52, 800.885")').text()
 
-    return pd.DataFrame({
+    return {
         'customer_id': customer_id,
         'customer_name': customer_name,
         'installation_code': installation_code,
@@ -40,11 +41,16 @@ def extracted_data(pdf):
         'icms_aliquota': int(icms_aliquota),
         'icms_price': float(sanitize_string(icms_price)),
         'unit_fee': float(sanitize_string(unit_fee)),
-    }, index=[0])
+    }
+
+data = []
 
 for pdf_file in pdf_files:
     pdf = pdfquery.PDFQuery(pdf_file)
     pdf.load()
     xml_file = f'{pdf_file.stem}.xml'
     pdf.tree.write(xml_file, pretty_print=True)
-    print(extracted_data(pdf))
+    data.append(extracted_data(pdf))
+
+df = pd.DataFrame(data)
+df.to_csv(current_dir / 'planilha.csv')
