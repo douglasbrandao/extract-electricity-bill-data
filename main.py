@@ -48,9 +48,10 @@ data = []
 for pdf_file in pdf_files:
     pdf = pdfquery.PDFQuery(pdf_file)
     pdf.load()
-    xml_file = f'{pdf_file.stem}.xml'
-    pdf.tree.write(xml_file, pretty_print=True)
+    xml_file = current_dir / f'{pdf_file.stem}.xml'
+    pdf.tree.write(xml_file.name, pretty_print=True)
     data.append(extracted_data(pdf))
+    xml_file.unlink() # uncomment if you don't want to delete these .xml files
 
 df = pd.DataFrame(data)
 df.to_csv(current_dir / 'planilha.csv')
